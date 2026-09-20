@@ -6,8 +6,15 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { Users } from './collections/Users'
+import { Articles } from './collections/Articles'
+import { Categories } from './collections/Categories'
+import { Faqs } from './collections/Faqs'
 import { Media } from './collections/Media'
+import { Plans } from './collections/Plans'
+import { Symptoms } from './collections/Symptoms'
+import { Users } from './collections/Users'
+import { Footer, Header } from './globals/Navigation'
+import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -19,7 +26,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Articles, Categories, Symptoms, Plans, Faqs, Media, Users],
+  globals: [Header, Footer, SiteSettings],
   editor: lexicalEditor(),
   localization: {
     locales: [
