@@ -239,6 +239,39 @@ export interface Page {
         blockType: 'symptomIndex';
       }
     | {
+        heading?: string | null;
+        subheading?: string | null;
+        intro?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        values?:
+          | {
+              /**
+               * C, A, R hoặc E
+               */
+              letter: string;
+              name: string;
+              body: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'careModel';
+      }
+    | {
         heading: string;
         body?: string | null;
         ctaLabel?: string | null;
@@ -686,6 +719,23 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               heading?: T;
               intro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        careModel?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              intro?: T;
+              values?:
+                | T
+                | {
+                    letter?: T;
+                    name?: T;
+                    body?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };

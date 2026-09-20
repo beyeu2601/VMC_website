@@ -182,6 +182,50 @@ const NAV = [
   },
 ]
 
+const FAQS = [
+  {
+    question: 'Làm thế nào để tôi bắt đầu tham gia chương trình chăm sóc tại VMC?',
+    answer:
+      'Bạn có thể bắt đầu bằng cách đăng ký tư vấn cùng bác sĩ tại VMC. Sau khi tiếp nhận thông tin ban đầu, đội ngũ y tế sẽ hướng dẫn bạn các bước tiếp theo và trao đổi về nhu cầu chăm sóc sức khỏe trong giai đoạn mãn kinh.',
+    order: 1,
+  },
+  {
+    question: 'Dựa vào đâu để VMC xác định phương pháp điều trị phù hợp với tôi?',
+    answer:
+      'Bác sĩ sẽ đánh giá các triệu chứng, tuổi, thời điểm mãn kinh, tiền sử bệnh, các thuốc đang sử dụng và những yếu tố liên quan khác để xác định phương pháp chăm sóc hoặc điều trị phù hợp. Với liệu pháp hormone mãn kinh (MHT), bác sĩ sẽ cân nhắc lợi ích và nguy cơ dựa trên tình trạng sức khỏe và nhu cầu riêng của từng người.',
+    order: 2,
+  },
+  {
+    question: 'Phương pháp chăm sóc tại VMC có được cá nhân hóa không?',
+    answer:
+      'Có. VMC hướng đến việc xây dựng kế hoạch chăm sóc phù hợp với từng người. Bác sĩ sẽ xem xét triệu chứng, tình trạng sức khỏe, tiền sử bệnh, nhu cầu và ưu tiên cá nhân của bạn để cùng bạn lựa chọn ra hướng chăm sóc phù hợp.',
+    order: 3,
+  },
+]
+
+const CARE_VALUES = [
+  {
+    letter: 'C',
+    name: 'Companionship (Đồng hành)',
+    body: 'Tại VMC, hành trình chăm sóc không kết thúc sau một buổi tư vấn hay một đợt điều trị. Chúng tôi đồng hành cùng bạn trong suốt quá trình chăm sóc sức khỏe nội tiết, từ việc giúp bạn hiểu rõ hơn những thay đổi của cơ thể, theo dõi quá trình trị liệu đến điều chỉnh lộ trình khi cần, để mỗi giai đoạn đều có sự đồng hành phù hợp và đáng tin cậy.',
+  },
+  {
+    letter: 'A',
+    name: 'Adaptive Care (Cá nhân hóa)',
+    body: 'Chúng tôi hiểu rằng cơ thể mỗi người phụ nữ là một nhịp điệu rất riêng. Vì vậy, VMC kết hợp công nghệ AI, dữ liệu sức khỏe và chuyên môn của đội ngũ bác sĩ để xây dựng lộ trình chăm sóc phù hợp, đồng thời linh hoạt điều chỉnh theo những thay đổi của cơ thể ở từng giai đoạn.',
+  },
+  {
+    letter: 'R',
+    name: 'Reliable Science (Đáng tin cậy y khoa)',
+    body: 'Chúng tôi tin rằng sự an tâm bắt đầu từ những thông tin đáng tin cậy. Vì vậy, mọi tư vấn và lộ trình chăm sóc tại VMC đều được xây dựng trên nền tảng y khoa, các phác đồ điều trị tiêu chuẩn quốc tế cùng với chuyên môn của đội ngũ bác sĩ, để bạn hiểu hơn về cơ thể và tự tin trong từng quyết định chăm sóc sức khỏe.',
+  },
+  {
+    letter: 'E',
+    name: 'Empathy (Thấu cảm)',
+    body: 'Tại VMC, sự chăm sóc bắt đầu từ việc lắng nghe. Chúng tôi hiểu rằng những thay đổi về nội tiết không chỉ ảnh hưởng đến cơ thể, mà còn tác động đến cảm xúc, tâm lý và chất lượng cuộc sống của mỗi phụ nữ. Vì vậy, VMC xây dựng một không gian chăm sóc an toàn, riêng tư và không phán xét, nơi phụ nữ được chia sẻ, được thấu hiểu và được hỗ trợ theo cách phù hợp nhất với mình.',
+  },
+]
+
 const seed = async () => {
   const payload = await getPayload({ config: await config })
   const editorConfig = await editorConfigFactory.default({ config: payload.config })
@@ -360,6 +404,163 @@ const seed = async () => {
     ],
   })
   payload.logger.info('Đã cập nhật trang chủ')
+
+  // 7. Câu hỏi thường gặp
+  for (const faq of FAQS) {
+    const existing = await payload.find({
+      collection: 'faqs',
+      where: { question: { equals: faq.question } },
+      limit: 1,
+    })
+
+    const data = { question: faq.question, answer: toLexical(faq.answer), order: faq.order }
+
+    if (existing.docs[0]) {
+      await payload.update({ collection: 'faqs', id: existing.docs[0].id, data })
+    } else {
+      await payload.create({ collection: 'faqs', data })
+    }
+  }
+  payload.logger.info(`Câu hỏi thường gặp: ${FAQS.length}`)
+
+  // 8. Các trang còn lại
+  await upsert(payload, 'pages', 'slug', 've-vmc', {
+    title: 'Về VMC',
+    metaDescription: 'Sứ mệnh, tầm nhìn và triết lý CARE của Vietnamese Menopause Center.',
+    _status: 'published',
+    layout: [
+      {
+        blockType: 'banner',
+        heading: 'Về VMC',
+        lead: 'Tại VMC, chúng tôi kết hợp công nghệ AI, các phác đồ điều trị theo tiêu chuẩn quốc tế và chuyên môn của đội ngũ bác sĩ để xây dựng lộ trình chăm sóc sức khỏe nội tiết được cá nhân hóa cho từng người.',
+      },
+      {
+        blockType: 'richText',
+        heading: 'Sứ mệnh và tầm nhìn',
+        background: 'none',
+        content: toLexical(
+          '### Sứ mệnh\n\nVMC đồng hành cùng phụ nữ chủ động kiểm soát sức khỏe nội tiết thông qua nền tảng chăm sóc cá nhân hóa kết hợp giữa y khoa, công nghệ và đội ngũ chuyên gia, giúp họ duy trì sự cân bằng về thể chất và tinh thần, nuôi dưỡng nguồn năng lượng tích cực và tận hưởng cuộc sống một cách trọn vẹn.\n\n### Tầm nhìn\n\nTrở thành nền tảng chăm sóc sức khỏe tiền mãn kinh và mãn kinh hàng đầu tại Việt Nam, tiên phong kiến tạo hệ sinh thái chăm sóc toàn diện, giúp phụ nữ chủ động kiểm soát sức khỏe, duy trì sự cân bằng, sống khỏe và tự tin hơn mỗi ngày.',
+        ),
+      },
+      {
+        blockType: 'careModel',
+        heading: 'Giá trị cốt lõi',
+        subheading: 'CARE - Cam kết đồng hành cùng phụ nữ từ sự thấu hiểu',
+        intro: toLexical(
+          'Đôi khi, có những thay đổi đến rất khẽ. Đó là một giấc ngủ không còn trọn vẹn. Một ngày bỗng thấy cơ thể thiếu năng lượng. Hay đôi lúc, cảm xúc trở nên nhạy cảm hơn mà chính mình cũng chưa hiểu vì sao.\n\nNhững thay đổi ấy không phải lúc nào cũng dễ nhận ra, nhưng đều xứng đáng được lắng nghe và thấu hiểu.\n\nVới VMC, mỗi hành trình chăm sóc luôn bắt đầu từ đó. Từ sự quan tâm đủ tinh tế để nhận ra những tín hiệu nhỏ của cơ thể, kết hợp cùng nền tảng y khoa đáng tin cậy, công nghệ hiện đại và lộ trình chăm sóc được cá nhân hóa. Đó cũng là tinh thần được gửi gắm trong triết lý CARE.',
+        ),
+        values: CARE_VALUES,
+      },
+    ],
+  })
+
+  await upsert(payload, 'pages', 'slug', 'chuong-trinh', {
+    title: 'Chương trình chăm sóc tại VMC',
+    metaDescription:
+      'VMC Care Program: lợi ích, các gói chăm sóc và thời gian tham gia chương trình.',
+    _status: 'published',
+    layout: [
+      { blockType: 'banner', heading: 'Chương trình chăm sóc tại VMC' },
+      {
+        blockType: 'richText',
+        heading: 'Những lợi ích bạn nhận được',
+        background: 'none',
+        content: toLexical(
+          'Mỗi hành trình chăm sóc tại VMC đều được thiết kế với mong muốn giúp bạn không chỉ cải thiện sức khỏe nội tiết, mà còn chủ động gìn giữ sự cân bằng và chất lượng cuộc sống lâu dài. Đó là những giá trị mà chúng tôi muốn gửi gắm thông qua VMC Care Program:\n\n- **Sự thấu hiểu rõ hơn về cơ thể**, giúp bạn nhận biết và chủ động trước những thay đổi của sức khỏe nội tiết.\n- **Lộ trình chăm sóc được cá nhân hóa**, phù hợp với tình trạng sức khỏe, nhu cầu và mục tiêu riêng của từng người.\n- **Sự đồng hành xuyên suốt từ đội ngũ bác sĩ và chuyên gia**, luôn theo dõi sát sao và điều chỉnh lộ trình chăm sóc phù hợp với từng giai đoạn.\n- **Phác đồ điều trị tuân theo tiêu chuẩn quốc tế**, kết hợp công nghệ hiện đại để hỗ trợ quá trình theo dõi và chăm sóc.\n- **Cam kết thuốc chính hãng được chuẩn bị theo đúng lộ trình và giao tận nhà định kỳ**, giúp bạn duy trì quá trình điều trị thuận tiện, liên tục và an tâm hơn.\n- **Sự cân bằng về thể chất, cảm xúc và chất lượng cuộc sống**, giúp bạn tự tin bước qua từng giai đoạn với sự an tâm và chủ động.',
+        ),
+      },
+      {
+        blockType: 'plans',
+        heading: 'Các gói chăm sóc tại VMC',
+        intro:
+          'Mỗi người phụ nữ có một nhu cầu riêng, và việc chăm sóc cũng vậy. VMC ở đây để bạn có thể bắt đầu từ những điều nhỏ nhất, lắng nghe cơ thể và tìm ra cách chăm sóc phù hợp với mình.',
+      },
+      {
+        blockType: 'richText',
+        heading: 'VMC Care Program kéo dài bao lâu?',
+        background: 'tint',
+        content: toLexical(
+          'Thực tế, không có một khoảng thời gian cố định dành cho tất cả mọi người. Bởi mỗi cơ thể có mức độ triệu chứng, tình trạng sức khỏe và mục tiêu điều trị khác nhau, nên lộ trình cũng được xây dựng và điều chỉnh phù hợp với từng người.\n\nPhần lớn phụ nữ bắt đầu cảm nhận những thay đổi tích cực **sau khoảng 4-8 tuần**. Tuy nhiên, cơ thể mỗi người có một nhịp đáp ứng riêng. Có người cảm nhận sớm hơn, có người cần thêm thời gian để đạt được hiệu quả ổn định. Trong suốt quá trình này, đội ngũ bác sĩ tại VMC sẽ theo dõi định kỳ, đánh giá mức độ đáp ứng và điều chỉnh phác đồ điều trị phù hợp, bao gồm cân nhắc thời điểm tiếp tục, giảm liều hoặc ngừng điều trị.\n\nĐiều mà VMC chúng tôi hướng đến không phải là điều trị càng lâu càng tốt mà là giúp bạn kiểm soát triệu chứng hiệu quả, an toàn và duy trì chất lượng cuộc sống tốt nhất trong từng giai đoạn của hành trình mãn kinh.',
+        ),
+      },
+    ],
+  })
+
+  await upsert(payload, 'pages', 'slug', 'kien-thuc', {
+    title: 'Thư viện kiến thức',
+    metaDescription:
+      'Kiến thức về tiền mãn kinh và mãn kinh: triệu chứng thường gặp, chăm sóc sức khỏe mỗi ngày và các chủ đề tổng hợp.',
+    _status: 'published',
+    layout: [
+      { blockType: 'banner', heading: 'Thư viện kiến thức' },
+      {
+        blockType: 'articleList',
+        heading: 'Triệu chứng thường gặp',
+        category: categoryIds['trieu-chung'],
+        limit: 3,
+        linkLabel: 'Xem tất cả bài triệu chứng',
+        linkHref: '/kien-thuc/trieu-chung',
+      },
+      {
+        blockType: 'articleList',
+        heading: 'Chăm sóc sức khỏe',
+        category: categoryIds['cham-soc'],
+        limit: 3,
+        linkLabel: 'Xem tất cả bài chăm sóc sức khỏe',
+        linkHref: '/kien-thuc/cham-soc',
+      },
+      {
+        blockType: 'articleList',
+        heading: 'Tổng hợp',
+        category: categoryIds['tong-hop'],
+        limit: 3,
+        linkLabel: 'Xem tất cả bài tổng hợp',
+        linkHref: '/kien-thuc/tong-hop',
+      },
+    ],
+  })
+
+  await upsert(payload, 'pages', 'slug', 'dong-hanh', {
+    title: 'Đồng hành cùng VMC',
+    metaDescription:
+      'Câu hỏi thường gặp, đặt lịch tư vấn cùng bác sĩ và thông tin liên hệ của VMC.',
+    _status: 'published',
+    layout: [
+      { blockType: 'banner', heading: 'Đồng hành cùng VMC' },
+      { blockType: 'faqBlock', heading: 'Câu hỏi thường gặp' },
+      {
+        blockType: 'richText',
+        heading: 'Thông tin liên hệ',
+        background: 'none',
+        content: toLexical(
+          '- Số điện thoại: +84 903 933 922\n- Email: vmc@tma.com.vn\n\nĐịa chỉ phòng khám đang được cập nhật.',
+        ),
+      },
+    ],
+  })
+  payload.logger.info('Đã cập nhật 4 trang nội dung')
+
+  // 9. Trang pháp lý: để nháp vì chưa có nội dung, không xuất bản trang trống
+  for (const legal of [
+    { slug: 'chinh-sach-bao-mat', title: 'Chính sách bảo mật' },
+    { slug: 'dieu-khoan', title: 'Điều khoản sử dụng' },
+  ]) {
+    await upsert(payload, 'pages', 'slug', legal.slug, {
+      title: legal.title,
+      _status: 'draft',
+      layout: [
+        { blockType: 'banner', heading: legal.title },
+        {
+          blockType: 'richText',
+          background: 'none',
+          content: toLexical(
+            'Nội dung đang được chuẩn bị. Trang này phải có nội dung trước khi website go-live.',
+          ),
+        },
+      ],
+    })
+  }
+  payload.logger.info('Đã tạo 2 trang pháp lý ở trạng thái nháp')
 
   process.exit(0)
 }

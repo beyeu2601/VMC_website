@@ -109,6 +109,28 @@ export const SymptomIndexBlock: Block = {
   ],
 }
 
+export const CareModelBlock: Block = {
+  slug: 'careModel',
+  labels: { singular: 'Mô hình CARE', plural: 'Mô hình CARE' },
+  fields: [
+    { name: 'heading', type: 'text', localized: true },
+    { name: 'subheading', type: 'text', localized: true },
+    { name: 'intro', type: 'richText', localized: true },
+    {
+      name: 'values',
+      type: 'array',
+      minRows: 2,
+      maxRows: 6,
+      labels: { singular: 'Giá trị', plural: 'Giá trị' },
+      fields: [
+        { name: 'letter', type: 'text', required: true, admin: { description: 'C, A, R hoặc E' } },
+        { name: 'name', type: 'text', required: true, localized: true },
+        { name: 'body', type: 'textarea', required: true, localized: true },
+      ],
+    },
+  ],
+}
+
 export const CalloutBlock: Block = {
   slug: 'callout',
   labels: { singular: 'Box CTA', plural: 'Box CTA' },
@@ -128,5 +150,6 @@ export const pageBlocks = [
   FaqBlock,
   ArticleListBlock,
   SymptomIndexBlock,
+  CareModelBlock,
   CalloutBlock,
 ]

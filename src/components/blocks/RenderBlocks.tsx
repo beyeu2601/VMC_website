@@ -4,6 +4,7 @@ import type React from 'react'
 import type { Category, Faq, Page, Plan } from '@/payload-types'
 import { getPayloadClient } from '@/lib/payload'
 import { ArticleCard } from '@/components/ArticleCard'
+import { CareTabs } from '@/components/CareTabs'
 import { RichText } from '@/components/RichText'
 import { SymptomIndex } from '@/components/SymptomIndex'
 
@@ -219,6 +220,19 @@ export const RenderBlocks = ({ blocks }: { blocks: Page['layout'] }) => (
                 {block.heading && <h2>{block.heading}</h2>}
                 {block.intro && <p className="prose">{block.intro}</p>}
                 <SymptomIndex />
+              </div>
+            </section>
+          )
+        case 'careModel':
+          return (
+            <section className="section section--tint" id="gia-tri" key={key}>
+              <div className="container">
+                {block.heading && <h2>{block.heading}</h2>}
+                {block.subheading && <p className="care__subheading">{block.subheading}</p>}
+                <div className="prose">
+                  <RichText data={block.intro} />
+                </div>
+                <CareTabs values={block.values ?? []} />
               </div>
             </section>
           )

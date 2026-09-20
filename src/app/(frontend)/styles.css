@@ -544,3 +544,60 @@ a.chip:hover {
   font-size: 0.9rem;
   opacity: 0.85;
 }
+
+/* Mô hình CARE */
+.care__subheading {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.care__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+
+.care__tab {
+  flex: 1 1 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: var(--space-2);
+  border: 1px solid var(--neutral-dark);
+  border-radius: var(--radius);
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.care__tab[aria-selected='true'] {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
+}
+
+.care__letter {
+  font-family: var(--font-heading);
+  font-size: var(--step-2);
+  font-weight: 700;
+}
+
+.care__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.care__panel {
+  background: #fff;
+  border: 1px solid var(--neutral-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  max-width: var(--measure);
+}
+
+.care__panel h3 {
+  margin-top: 0;
+}
