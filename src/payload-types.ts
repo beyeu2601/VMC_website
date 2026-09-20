@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    pages: Page;
     articles: Article;
     categories: Category;
     symptoms: Symptom;
@@ -81,6 +82,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    pages: PagesSelect<false> | PagesSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     symptoms: SymptomsSelect<false> | SymptomsSelect<true>;
@@ -134,6 +136,203 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Dùng "home" cho trang chủ. Các trang khác: ve-vmc, chuong-trinh, dong-hanh...
+   */
+  slug: string;
+  /**
+   * Mô tả hiển thị trên Google, nên dưới 160 ký tự.
+   */
+  metaDescription?: string | null;
+  layout: (
+    | {
+        heading: string;
+        lead?: string | null;
+        primaryCta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        secondaryCta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'hero';
+      }
+    | {
+        heading: string;
+        lead?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'banner';
+      }
+    | {
+        heading?: string | null;
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        background?: ('none' | 'tint' | 'neutral') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'richText';
+      }
+    | {
+        heading?: string | null;
+        intro?: string | null;
+        /**
+         * Để trống thì hiển thị tất cả gói theo thứ tự.
+         */
+        plans?: (number | Plan)[] | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'plans';
+      }
+    | {
+        heading?: string | null;
+        /**
+         * Để trống thì hiển thị tất cả câu hỏi theo thứ tự.
+         */
+        faqs?: (number | Faq)[] | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'faqBlock';
+      }
+    | {
+        heading?: string | null;
+        /**
+         * Để trống thì lấy bài mới nhất của mọi chuyên mục.
+         */
+        category?: (number | null) | Category;
+        limit?: number | null;
+        linkLabel?: string | null;
+        linkHref?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'articleList';
+      }
+    | {
+        heading?: string | null;
+        intro?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'symptomIndex';
+      }
+    | {
+        heading: string;
+        body?: string | null;
+        ctaLabel?: string | null;
+        ctaHref?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'callout';
+      }
+  )[];
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plans".
+ */
+export interface Plan {
+  id: number;
+  name: string;
+  slug: string;
+  tagline?: string | null;
+  description?: string | null;
+  /**
+   * Số tiền theo VND, ví dụ 199000.
+   */
+  price: number;
+  billingPeriod: 'first-month' | 'month' | 'quarter' | 'year';
+  /**
+   * Nhãn nhỏ trên card, ví dụ "Lựa chọn phổ biến". Tách riêng khỏi nút CTA.
+   */
+  badge?: string | null;
+  ctaLabel?: string | null;
+  features?:
+    | {
+        label: string;
+        /**
+         * Để trống nghĩa là có.
+         */
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  question: string;
+  answer: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  /**
+   * Dùng trong URL, ví dụ trieu-chung, cham-soc, tong-hop.
+   */
+  slug: string;
+  /**
+   * Dẫn nhập hiển thị ở đầu trang chuyên mục.
+   */
+  intro?: string | null;
+  /**
+   * Các từ khóa chính, phân cách bằng dấu phẩy.
+   */
+  seoKeywords?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -233,28 +432,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  title: string;
-  /**
-   * Dùng trong URL, ví dụ trieu-chung, cham-soc, tong-hop.
-   */
-  slug: string;
-  /**
-   * Dẫn nhập hiển thị ở đầu trang chuyên mục.
-   */
-  intro?: string | null;
-  /**
-   * Các từ khóa chính, phân cách bằng dấu phẩy.
-   */
-  seoKeywords?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -332,66 +509,6 @@ export interface Symptom {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plans".
- */
-export interface Plan {
-  id: number;
-  name: string;
-  slug: string;
-  tagline?: string | null;
-  description?: string | null;
-  /**
-   * Số tiền theo VND, ví dụ 199000.
-   */
-  price: number;
-  billingPeriod: 'first-month' | 'month' | 'quarter' | 'year';
-  /**
-   * Nhãn nhỏ trên card, ví dụ "Lựa chọn phổ biến". Tách riêng khỏi nút CTA.
-   */
-  badge?: string | null;
-  ctaLabel?: string | null;
-  features?:
-    | {
-        label: string;
-        /**
-         * Để trống nghĩa là có.
-         */
-        value?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "faqs".
- */
-export interface Faq {
-  id: number;
-  question: string;
-  answer: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -414,6 +531,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
     | ({
         relationTo: 'articles';
         value: number | Article;
@@ -483,6 +604,105 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  metaDescription?: T;
+  layout?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              heading?: T;
+              lead?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        banner?:
+          | T
+          | {
+              heading?: T;
+              lead?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              heading?: T;
+              content?: T;
+              background?: T;
+              id?: T;
+              blockName?: T;
+            };
+        plans?:
+          | T
+          | {
+              heading?: T;
+              intro?: T;
+              plans?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faqBlock?:
+          | T
+          | {
+              heading?: T;
+              faqs?: T;
+              id?: T;
+              blockName?: T;
+            };
+        articleList?:
+          | T
+          | {
+              heading?: T;
+              category?: T;
+              limit?: T;
+              linkLabel?: T;
+              linkHref?: T;
+              id?: T;
+              blockName?: T;
+            };
+        symptomIndex?:
+          | T
+          | {
+              heading?: T;
+              intro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

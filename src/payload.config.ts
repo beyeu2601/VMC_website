@@ -10,6 +10,7 @@ import { Articles } from './collections/Articles'
 import { Categories } from './collections/Categories'
 import { Faqs } from './collections/Faqs'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 import { Plans } from './collections/Plans'
 import { Symptoms } from './collections/Symptoms'
 import { Users } from './collections/Users'
@@ -26,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Articles, Categories, Symptoms, Plans, Faqs, Media, Users],
+  collections: [Pages, Articles, Categories, Symptoms, Plans, Faqs, Media, Users],
   globals: [Header, Footer, SiteSettings],
   editor: lexicalEditor(),
   localization: {

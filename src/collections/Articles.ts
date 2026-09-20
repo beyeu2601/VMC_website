@@ -3,6 +3,7 @@ import { APIError } from 'payload'
 
 import { canEditContent, isAdmin, isClinicalReviewerField } from '../access/roles'
 import { publishedOrLoggedIn } from '../access/publishedOrLoggedIn'
+import { revalidateArticle, revalidateArticleAfterDelete } from '../hooks/revalidate'
 
 /** Các trường tạo nên nội dung bài. Sửa bất kỳ trường nào trong đây thì phải duyệt lại. */
 const CONTENT_FIELDS = [
@@ -90,6 +91,8 @@ export const Articles: CollectionConfig = {
   },
   hooks: {
     beforeChange: [enforceClinicalApproval],
+    afterChange: [revalidateArticle],
+    afterDelete: [revalidateArticleAfterDelete],
   },
   fields: [
     {
