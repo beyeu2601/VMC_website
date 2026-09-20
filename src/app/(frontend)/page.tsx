@@ -18,10 +18,16 @@ const getHomePage = async () => {
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {
-  const page = await getHomePage()
+  const payload = await getPayloadClient()
+  const [page, settings] = await Promise.all([
+    getHomePage(),
+    payload.findGlobal({ slug: 'site-settings' }),
+  ])
 
+  // Template "%s | VMC" khai báo ở layout không áp cho trang cùng segment,
+  // nên trang chủ tự ghép tên site với tagline thay vì dùng title "Trang chủ".
   return {
-    title: page?.title ?? 'VMC',
+    title: settings.tagline ? `${settings.siteName} - ${settings.tagline}` : settings.siteName,
     description: page?.metaDescription ?? undefined,
   }
 }
